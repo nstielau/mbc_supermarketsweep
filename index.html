@@ -188,10 +188,11 @@
                 this.isSpinning = true;
                 this.finalItem = this.foods[finalIndex];
 
-                // Calculate spins and final position
-                const spins = 3 + this.reelIndex; // More spins for later reels
+                // Calculate spins - use same number for all reels to ensure consistency
+                const spins = 3;
                 const totalItems = this.foods.length;
-                const spinDistance = (spins * totalItems + finalIndex) * this.itemHeight;
+                // Final position: always land at the same point in the extended reel
+                const finalPosition = (totalItems * 2 + finalIndex) * this.itemHeight;
 
                 const startTime = Date.now();
                 const animate = () => {
@@ -201,15 +202,12 @@
                     // Ease-out cubic for gradual deceleration
                     const easeProgress = 1 - Math.pow(1 - progress, 3);
 
-                    this.currentPosition = spinDistance * easeProgress;
+                    this.currentPosition = finalPosition * easeProgress;
                     this.reelElement.style.transform = `translateY(-${this.currentPosition}px)`;
 
                     if (progress < 1) {
                         requestAnimationFrame(animate);
                     } else {
-                        // Snap to final position (top of container shows the selected item)
-                        const finalPosition = (this.foods.length * 2 + finalIndex) * this.itemHeight;
-                        this.reelElement.style.transform = `translateY(-${finalPosition}px)`;
                         this.isSpinning = false;
                     }
                 };
