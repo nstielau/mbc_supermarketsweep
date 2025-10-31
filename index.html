@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Pantry Slot Machine</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: url('BurgerVision.png') no-repeat center center fixed;
+            background-size: contain;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            overflow: hidden;
+            padding-top: 20px;
+        }
+
+        .slot-machine {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            padding: 40px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 20px;
+            box-shadow: 0 0 40px rgba(255, 0, 255, 0.5);
+        }
+
+        .reel-container {
+            width: 190px;
+            height: 130px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 3px solid #ff00ff;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+            box-shadow:
+                inset 0 0 20px rgba(255, 0, 255, 0.3),
+                0 0 30px rgba(255, 0, 255, 0.6);
+        }
+
+        .reel-container:nth-child(2) {
+            border-color: #00ffff;
+            box-shadow:
+                inset 0 0 20px rgba(0, 255, 255, 0.3),
+                0 0 30px rgba(0, 255, 255, 0.6);
+        }
+
+        .reel-container:nth-child(3) {
+            border-color: #00ff00;
+            box-shadow:
+                inset 0 0 20px rgba(0, 255, 0, 0.3),
+                0 0 30px rgba(0, 255, 0, 0.6);
+        }
+
+        .reel {
+            position: absolute;
+            width: 100%;
+            top: 0;
+            transition: none;
+        }
+
+        .reel-item {
+            height: 130px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: bold;
+            text-align: center;
+            padding: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Neon colors for different items */
+        .neon-pink {
+            color: #ff00ff;
+            text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff, 0 0 30px #ff00ff, 0 0 40px #ff00ff;
+        }
+        .neon-cyan {
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #00ffff, 0 0 40px #00ffff;
+        }
+        .neon-green {
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00, 0 0 40px #00ff00;
+        }
+        .neon-yellow {
+            color: #ffff00;
+            text-shadow: 0 0 10px #ffff00, 0 0 20px #ffff00, 0 0 30px #ffff00, 0 0 40px #ffff00;
+        }
+        .neon-orange {
+            color: #ff9900;
+            text-shadow: 0 0 10px #ff9900, 0 0 20px #ff9900, 0 0 30px #ff9900, 0 0 40px #ff9900;
+        }
+        .neon-purple {
+            color: #9d00ff;
+            text-shadow: 0 0 10px #9d00ff, 0 0 20px #9d00ff, 0 0 30px #9d00ff, 0 0 40px #9d00ff;
+        }
+        .neon-red {
+            color: #ff0066;
+            text-shadow: 0 0 10px #ff0066, 0 0 20px #ff0066, 0 0 30px #ff0066, 0 0 40px #ff0066;
+        }
+        .neon-blue {
+            color: #0066ff;
+            text-shadow: 0 0 10px #0066ff, 0 0 20px #0066ff, 0 0 30px #0066ff, 0 0 40px #0066ff;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="slot-machine">
+        <div class="reel-container">
+            <div class="reel" id="reel1"></div>
+        </div>
+        <div class="reel-container">
+            <div class="reel" id="reel2"></div>
+        </div>
+        <div class="reel-container">
+            <div class="reel" id="reel3"></div>
+        </div>
+    </div>
+
+    <script>
+        // Food pantry items split into 3 groups
+        const foodGroups = [
+            // Group 1 (Reel 1): 7 items
+            [
+                { name: "Peanut Butter", color: "neon-pink" },
+                { name: "Canned Beans", color: "neon-cyan" },
+                { name: "Canned Soup", color: "neon-green" },
+                { name: "Canned Tuna", color: "neon-yellow" },
+                { name: "Pasta", color: "neon-orange" },
+                { name: "Rice", color: "neon-purple" },
+                { name: "Canned Vegetables", color: "neon-red" }
+            ],
+            // Group 2 (Reel 2): 7 items
+            [
+                { name: "Canned Fruit", color: "neon-blue" },
+                { name: "Cereal", color: "neon-pink" },
+                { name: "Oatmeal", color: "neon-cyan" },
+                { name: "Mac & Cheese", color: "neon-green" },
+                { name: "Tomato Sauce", color: "neon-yellow" },
+                { name: "Cooking Oil", color: "neon-orange" },
+                { name: "Flour", color: "neon-purple" }
+            ],
+            // Group 3 (Reel 3): 6 items
+            [
+                { name: "Sugar", color: "neon-red" },
+                { name: "Canned Tomatoes", color: "neon-blue" },
+                { name: "Chicken Broth", color: "neon-pink" },
+                { name: "Crackers", color: "neon-cyan" },
+                { name: "Granola Bars", color: "neon-green" },
+                { name: "Shelf-Stable Milk", color: "neon-yellow" }
+            ]
+        ];
+
+        class SlotReel {
+            constructor(reelElement, foods, reelIndex) {
+                this.reelElement = reelElement;
+                this.foods = foods;
+                this.reelIndex = reelIndex;
+                this.itemHeight = 130;
+                this.currentPosition = 0;
+                this.targetPosition = 0;
+                this.isSpinning = false;
+                this.finalItem = null;
+
+                this.init();
+            }
+
+            init() {
+                // Create extended reel for smooth looping
+                const extendedFoods = [...this.foods, ...this.foods, ...this.foods, ...this.foods];
+                this.reelElement.innerHTML = extendedFoods.map(food =>
+                    `<div class="reel-item ${food.color}">${food.name}</div>`
+                ).join('');
+            }
+
+            spin(duration, finalIndex) {
+                this.isSpinning = true;
+                this.finalItem = this.foods[finalIndex];
+
+                // Calculate spins and final position
+                const spins = 3 + this.reelIndex; // More spins for later reels
+                const totalItems = this.foods.length;
+                const spinDistance = (spins * totalItems + finalIndex) * this.itemHeight;
+
+                const startTime = Date.now();
+                const animate = () => {
+                    const elapsed = Date.now() - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+
+                    // Ease-out cubic for gradual deceleration
+                    const easeProgress = 1 - Math.pow(1 - progress, 3);
+
+                    this.currentPosition = spinDistance * easeProgress;
+                    this.reelElement.style.transform = `translateY(-${this.currentPosition}px)`;
+
+                    if (progress < 1) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        // Snap to final position (top of container shows the selected item)
+                        const finalPosition = (this.foods.length * 2 + finalIndex) * this.itemHeight;
+                        this.reelElement.style.transform = `translateY(-${finalPosition}px)`;
+                        this.isSpinning = false;
+                    }
+                };
+
+                requestAnimationFrame(animate);
+            }
+        }
+
+        // Initialize reels
+        const reels = [
+            new SlotReel(document.getElementById('reel1'), foodGroups[0], 0),
+            new SlotReel(document.getElementById('reel2'), foodGroups[1], 1),
+            new SlotReel(document.getElementById('reel3'), foodGroups[2], 2)
+        ];
+
+        // Spin on load
+        window.addEventListener('load', () => {
+            // Random selections from each group
+            const selections = foodGroups.map(group =>
+                Math.floor(Math.random() * group.length)
+            );
+
+            // Staggered spin timing
+            setTimeout(() => reels[0].spin(2000, selections[0]), 0);
+            setTimeout(() => reels[1].spin(2500, selections[1]), 300);
+            setTimeout(() => reels[2].spin(3000, selections[2]), 600);
+        });
+    </script>
+</body>
+</html>
